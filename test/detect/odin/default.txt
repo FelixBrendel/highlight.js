@@ -35,7 +35,7 @@ general_stuff :: proc() {
 	// C-style variadic procedures
 	foreign __llvm_core {
 		// The variadic part allows for extra type checking too which C does not provide
-		c_printf :: proc(fmt: ^u8, #c_vararg args: ...any) -> i32 #link_name "printf" ---;
+		c_printf :: proc(fmt: ^u8, #c_vararg args: ...any) -> i32 #  link_name "printf" ---;
 	}
 	str := "%d\n\x00";
 	// c_printf(&str[0], i32(789456123));
