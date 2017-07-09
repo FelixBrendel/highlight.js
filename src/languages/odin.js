@@ -40,29 +40,40 @@ function(hljs) {
                     {begin: '"', end: '[^\\\\]"'},
                 ]
             },
-            {
+            { // hash keywords
                 className: 'keyword',
                 begin: '#\\s*\\S',
                 returnBegin: true,
                 end: '\\s'
             },
+            // { // function calls
+            //     className: 'function',
+            //     begin: /[a-zA-Z0-9_][\w]*\(/,
+            //     end: /\(/,
+            //     returnBegin: true,
+            //     excludeEnd: true,
+            //     returnEnd: false,
+            //     contains : [
+            //         hljs.TITLE_MODE // TODO(Felix): include leading underscores
+            //     ],
+            //     keywords: ODIN_KEYWORDS,
+            // },
             {
                 className: 'number',
                 variants: [
-                    {begin: hljs.C_NUMBER_RE + '[dflsi]', relevance: 1},
+                    {begin: hljs.C_NUMBER_RE + '[dflsi]', relevance: 1}, // TODO(Felix): check allowed chars after number
                     hljs.C_NUMBER_MODE
                 ]
             },
             {
-                begin: /[a-zA-Z0-9_][\w]*\s*:\s*:\s*(struct)/,
+                begin: /[a-zA-Z0-9_][\w]*\s*:\s*:\s*(struct|enum|union|raw_union|bit_field)/,
                 end: /\{/,
                 returnBegin: true,
                 contains: [
-                    { // the word struct
+                    { // the word struct|enum|union|raw_union|bit_field
                         className: 'keywords',
-                        begin: /struct/,
-                        endsWithParent: true,
-                        keywords: "struct",
+                        begin: /struct|enum|union|raw_union|bit_field/,
+                        keywords: "struct enum union raw_union bit_field",
                     },
                     { // struct name
                         className: 'type',
@@ -71,47 +82,81 @@ function(hljs) {
                     }
                 ]
             },
-            {
+            { // normal procs
                 begin: /[a-zA-Z0-9_][\w]*\s*:\s*:\s*(proc)/,
-                end: /\{|do|---/,
+                end: /;|\{|do|---/,
                 returnBegin: true,
-                returnEnd:true,
-                excludeEnd: false,
+                excludeBegin: false,
+                returnEnd: false,
+                excludeEnd: true,
                 contains: [
-                    { // the word proc
-                        className: 'keywords',
-                        begin: /proc/, end: /\(/,
-                        returnEnd:true,
-                        keywords: "proc",
-                    },
                     { // the procs name
                         className: 'function',
-                        begin: /^[^(->\s*)][a-zA-Z0-9_]/,
+                        begin: /[a-zA-Z0-9_]*\s/,
                         end: /\s/,
                         returnBegin: true,
                         contains : [
-                            hljs.TITLE_MODE
+                            hljs.TITLE_MODE // TODO(Felix): include leading underscores
                         ]
                     },
-                    // { // the return type
-                    //     begin: /->\s*\S/,
-                    //     ens: /\{/,
-                    //     contains: [
-                    //         {
-                    //             className: 'keywords',
-                    //             begin: /\S/,
-                    //             end: /\s|\{|do|---/,
-                    //             keywords: ODIN_KEYWORDS, // TODO(Felix): use ODIN_TYPES
-                    //         }
-                    //     ]
-                    // },
-                    {
-                        className: 'params',
-                        begin: /\(/, end: /\)/,
+                    { // the return type
+                        begin: /->(\s*\^\s*)?(\s*\[\s*\])?\s*/,
+                        endsWithParent: true,
+                        excludeEnd: true,
+                        returnEnd:  true,
+                        contains: [
+                            {
+                                className: 'type',
+                                begin: /\S/,
+                                endsWithParent: true,
+                                returnBegin: true,
+                                returnEnd: false,
+                                excludeEnd: true,
+                                keywords: ODIN_KEYWORDS, // TODO(Felix): use ODIN_TYPES
+                            },
+                        ]
+                    },
+                    { // parameters
+                        begin: /\(/,
+                        end: /\)/,
+                        excludeBegin: true,
+                        excludeEnd: true,
+                        contains: [
+                            // { // proc as parameter
+                            //     begin: /proc\s*\(/,
+                            //     end: /\)/,
+                            //     returnBegin: false,
+                            //     returnEnd: false,
+                            //     keywords: "proc",
+                            //     keywords: ODIN_KEYWORDS,
+                            // },
+                            {
+                                className: 'type',
+                                begin: /\:(\s*(\.\.\.|\^|\[\]))?/,
+                                end: /,/,
+                                endsWithParent: true,
+                                excludeBegin: true,
+                                excludeEnd: true,
+                                returnEnd:  false,
+                                returnBegin:false,
+                                keywords: ODIN_KEYWORDS, // TODO(Felix): use ODIN_TYPES
+                            },
+                            // { // hash keywords in parameters
+                            //     className: 'keyword',
+                            //     begin: '#\\s*\\S',
+                            //     end: ';|\\s',
+                            //     returnBegin: true,
+                            //     returnEnd: false,
+                            //     excludeEnd: true,
+                            // },
+
+                        ],
                         keywords: ODIN_KEYWORDS,
-                    }
-                ]
-            }
+                    },
+                ],
+                keywords: ODIN_KEYWORDS
+            },
+
         ]
     };
 }
