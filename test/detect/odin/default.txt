@@ -1,4 +1,25 @@
+  cust :: struct {
+    m1 : int,
+    as : ^cust,
+    ks : string
+}
 
-t :: proc (f : proc(i : int, c : cust) -> bosol, d : string) -> proc(inp : string) -> bool {
-    // fuck my life
+
+testName :: proc (f : proc(i : int,
+                     c : proc (a : cust) -> cust)
+                     -> cust,
+                  d : string)
+                      -> proc(i : int) -> cust
+{
+    b : bool = true;
+    i : int : 1231;
+    f : f64 : ---;
+    s : string = "asf";
+    len(test);
+    myfunc(test);
+    fmt.println("Hello World");
+}
+
+foo :: proc() -> proc(cust) {
+    return nil;
 }

@@ -1,7 +1,8 @@
 /*
 Language: Odin
 Author: Felix Brendel <felix@brendel.engineering>
-Description: Language Odin by github.com/gingerBill
+Date: 9.July.2017
+Description: Language support for Odin by
 Category: system
 */
 
@@ -18,7 +19,7 @@ function(hljs) {
             'bool rune i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 int uint f16 f32 f64 ' +
             'complex32 complex64 complex128 rawptr string any ',
         literal:
-            'true false nil ---',
+            'true false nil --- ',
         built_in:
             'len cap new make free reserve clear append pop delete compile_assert assert panic ' +
             'copy swizzle complex real imag conj expand_to_tuple min max abs clamp transmute '
@@ -42,59 +43,83 @@ function(hljs) {
     }
 
     ODIN_RETURN_TYPE_RE = {
-        begin: /->\s*(\^\s*)?(\s*\[\s*\])?\s*(?!proc)/,
-        end: /\)|,/,
+        begin: /->\s*(\^\s*)?(\s*\[\s*\])?\s*/,
+        end: /\r|\n/,
+        // end: /\)|,/,
         endsWithParent: true,
         excludeEnd: true,
         returnEnd:  false,
         contains: [
             {
                 className: 'type',
-                begin: /\S/,
+                begin: /(!:\s*proc)\s*\S/,
                 endsWithParent: true,
                 returnBegin: true,
                 returnEnd: false,
                 excludeEnd: true,
                 keywords: ODIN_KEYWORDS, // TODO(Felix): use ODIN_TYPES
-                contains : []
             },
             ODIN_HASHKEYWORD_RE,
         ],
         keywords: ODIN_KEYWORDS
     }
 
-    ODIN_PARAMS_RE = { // parameters
-        begin: /\(/,
-        end: /\)/,
-        excludeBegin: true,
+    // ODIN_PARAMS_RE = { // parameters
+    //     begin: /\(/,
+    //     end: /\)/,
+    //     excludeBegin: true,
+    //     excludeEnd: true,
+    //     contains: [
+    //         {
+    //             begin: /\s*:(\s*=)?\s*(\.\.\.\s*)?(\^\s*)?(\[\s*\]\s*)?/,
+    //             end: /,/,
+    //             endsWithParent: true,
+    //             excludeEnd: true,
+    //             returnEnd:  false,
+    //             returnBegin: true,
+    //             contains : [
+    //                 {
+    //                     className: "type",
+    //                     begin: /:\s*(\.\.\.\s*)?(\^\s*)?(\[\]\s*)?(?!proc)/,
+    //                     end: /=|\s/,
+    //                     endsWithParent: true,
+    //                     excludeBegin: true,
+    //                     returnBegin: false,
+    //                     excludeEnd: true,
+    //                     keywords: ODIN_KEYWORDS, // TODO(Felix): use ODIN_TYPES
+    //                 },
+    //                 ODIN_NUMBER_RE,
+    //                 ODIN_HASHKEYWORD_RE
+    //             ],
+    //             keywords: ODIN_KEYWORDS,
+    //         },
+    //     ],
+    //     keywords: ODIN_KEYWORDS,
+    // }
+
+    ODIN_VAR_DECL_RE = { // parameters
+        begin: /\s*:(\s*=)?\s*(\.\.\.\s*)?(\^\s*)?(\[\s*\]\s*)?/,
+        end: /,|\:|=|\)|\}/,
+        endsWithParent: true,
         excludeEnd: true,
-        contains: [
+        returnEnd:  false,
+        returnBegin: true,
+        contains : [
             {
-                begin: /\s*:(\s*=)?\s*(\.\.\.\s*)?(\^\s*)?(\[\s*\]\s*)?/,
-                end: /,/,
+                className: "type",
+                begin: /:\s*(\.\.\.\s*)?(\^\s*)?(\[\]\s*)?(?!proc)/,
+                end: /=|\s/,
                 endsWithParent: true,
+                excludeBegin: true,
+                returnBegin: false,
                 excludeEnd: true,
-                returnEnd:  false,
-                returnBegin: true,
-                contains : [
-                    {
-                        className: "type",
-                        begin: /:\s*(\.\.\.\s*)?(\^\s*)?(\[\]\s*)?(?!proc)/,
-                        end: /=|\s/,
-                        endsWithParent: true,
-                        excludeBegin: true,
-                        returnBegin: false,
-                        excludeEnd: true,
-                        keywords: ODIN_KEYWORDS, // TODO(Felix): use ODIN_TYPES
-                    },
-                    ODIN_NUMBER_RE,
-                    ODIN_HASHKEYWORD_RE
-                ],
-                keywords: ODIN_KEYWORDS,
+                keywords: ODIN_KEYWORDS, // TODO(Felix): use ODIN_TYPES
             },
+            ODIN_NUMBER_RE,
+            ODIN_HASHKEYWORD_RE
         ],
         keywords: ODIN_KEYWORDS,
-    }
+    },
 
 
     ODIN_PROC_RE = { // procs
@@ -107,7 +132,7 @@ function(hljs) {
             contains: [
                 { // the procs name
                     className: 'function',
-                    begin: /^[a-zA-Z0-9_]/,
+                    begin: /[a-zA-Z0-9_].*(?:\s*:\s*:)/,
                     end: /\s/,
                     endsWithParent: true,
                     returnBegin: true,
@@ -115,7 +140,7 @@ function(hljs) {
                         hljs.TITLE_MODE // TODO(Felix): include leading underscores
                     ],
                 },
-                ODIN_PARAMS_RE,
+                ODIN_VAR_DECL_RE,
                 ODIN_RETURN_TYPE_RE,
                 ODIN_HASHKEYWORD_RE
             ],
@@ -124,7 +149,7 @@ function(hljs) {
 
 
     // HACK HACK HACK
-    ODIN_RETURN_TYPE_RE.contains.push(ODIN_PARAMS_RE);
+    // ODIN_RETURN_TYPE_RE.contains.push(ODIN_PARAMS_RE);
 
     return {
         aliases: ['odinlang'],
@@ -146,15 +171,16 @@ function(hljs) {
             //     className: 'function',
             //     begin: /[a-zA-Z0-9_][\w]*\s*\(/,
             //     end: /\(/,
+            //     excludeBegin:false,
             //     returnBegin: true,
             //     excludeEnd: true,
             //     returnEnd: false,
+            //     keywords: ODIN_KEYWORDS,
             //     contains : [
             //         hljs.TITLE_MODE // TODO(Felix): include leading underscores
             //     ],
-            //     keywords: ODIN_KEYWORDS,
             // },
-
+            ODIN_VAR_DECL_RE,
             { // structs
                 begin: /[a-zA-Z0-9_][\w]*\s*:\s*:\s*(struct|enum|union|raw_union|bit_field)/,
                 end: /\{/,
@@ -169,7 +195,8 @@ function(hljs) {
                         className: 'type',
                         begin: /[a-zA-Z0-9_]/,
                         end: /\s/,
-                    }
+                    },
+                    ODIN_HASHKEYWORD_RE,
                 ]
             },
             ODIN_PROC_RE
