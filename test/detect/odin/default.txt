@@ -1,20 +1,47 @@
-  cust :: struct {
+import "fmt.odin";
+
+main :: proc() {
+	program := "+ + * 😀 - /";
+	accumulator := 0;
+
+	for token in program {
+		match token {
+		case '+': accumulator += 1;
+		case '-': accumulator -= 1;
+		case '*': accumulator *= 2;
+		case '/': accumulator /= 2;
+		case '😀': accumulator *= accumulator;
+		case: // Ignore everything else
+		}
+	}
+
+	fmt.printf("The program \"%s\" calculates the value %d\n",
+	           program, accumulator);
+}
+
+
+cust :: struct {
     m1 : int,
     as : ^cust,
     ks : string
 }
 
+foo :: proc(input: string) -> (proc(int) -> sdf, proc(name: string) -> (asd, bool)) {
+
+}
 
 testName :: proc (f : proc(i : int,
                      c : proc (a : cust) -> cust)
                      -> cust,
                   d : string)
-                      -> proc(i : int) -> cust
+                      -> proc(i : int)
+            -> proc(asd : cust) -> cust
 {
     b : bool = true;
     i : int : 1231;
     f : f64 : ---;
     s : string = "asf";
+    c : cust;
     len(test);
     myfunc(test);
     fmt.println("Hello World");
@@ -22,4 +49,62 @@ testName :: proc (f : proc(i : int,
 
 foo :: proc() -> proc(cust) {
     return nil;
+}
+
+// Comma based
+Entity :: struct {
+    id:          u64,
+    flags:       u64,
+    name:        string,
+    position:    Vector3,
+    orientation: Quaternion,
+}
+
+Vector3 :: struct {x, y, z: f32};
+
+/*
+    Features
+     * Same syntax as procedures
+     * Allow for single line declarations without the end comma
+     * Does not allow for nested declarations
+ */
+
+
+// Semicolon based
+Entity :: struct {
+    id:          u64;
+    flags:       u64;
+    name:        string;
+    position:    Vector3;
+    orientation: Quaternion;
+}
+
+Vector3 :: struct { x, y, z: f32; };
+
+/*
+    Features
+     * Same syntax as a block of declarations
+     * Does not allow for single line declarations without using a semicolon
+     * Allows for nested declarations
+ */
+
+
+ Entity :: struct {
+    id:          u64;
+    flags:       u64;
+    name:        string;
+    position:    Vector3;
+    orientation: Quaternion;
+
+    derived: any;
+
+    CONSTANT_NUMBER :: 137;
+
+    Rock :: struct {
+        is_heavy: bool;
+    };
+    Monster :: struct {
+        is_robot:  bool;
+        is_zombie: bool;
+    }
 }

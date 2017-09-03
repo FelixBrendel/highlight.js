@@ -25,6 +25,14 @@ function(hljs) {
             'copy swizzle complex real imag conj expand_to_tuple min max abs clamp transmute '
     };
 
+    ODIN_COMMENT_RE = {
+        className: 'comment',
+        variants: [
+            hljs.C_LINE_COMMENT_MODE,
+            hljs.C_BLOCK_COMMENT_MODE
+        ]
+    }
+
     ODIN_NUMBER_RE = {
         className: 'number',
         variants: [
@@ -41,6 +49,41 @@ function(hljs) {
         returnEnd: false,
         excludeEnd: true,
     }
+
+    ODIN_STRING_RE = {
+        className: 'string',
+        variants: [
+            hljs.QUOTE_STRING_MODE,
+            {begin: '\'', end: '[^\\\\]\''},
+            {begin: '"', end: '[^\\\\]"'},
+        ]
+    }
+
+    ODIN_VAR_DECL_RE = { // variables and parameters
+        begin: /(?!:(?=\s*\S*\s*:)):\s*(=\s*)?(\.\.\.\s*)?(\^\s*)?(\[\s*\]\s*)?/,
+        end: /,|=|\)|\}|;/,
+        endsWithParent: true,
+        excludeEnd: true,
+        returnEnd:  false,
+        returnBegin: true,
+        contains : [
+            // {
+            //     className: "type",
+            //     begin: /:\s*(\.\.\.\s*)?(\^\s*)?(\[\]\s*)?(?!proc)/,
+            //     end: /=|\s/,
+            //     endsWithParent: true,
+            //     excludeBegin: true,
+            //     returnBegin: false,
+            //     excludeEnd: true,
+            //     keywords: ODIN_KEYWORDS, // TODO(Felix): use ODIN_TYPES
+            // },
+            ODIN_NUMBER_RE,
+            ODIN_HASHKEYWORD_RE,
+            ODIN_STRING_RE,
+            ODIN_COMMENT_RE
+        ],
+        keywords: ODIN_KEYWORDS,
+    },
 
     ODIN_RETURN_TYPE_RE = {
         begin: /->\s*(\^\s*)?(\s*\[\s*\])?\s*/,
@@ -60,6 +103,7 @@ function(hljs) {
                 keywords: ODIN_KEYWORDS, // TODO(Felix): use ODIN_TYPES
             },
             ODIN_HASHKEYWORD_RE,
+            ODIN_VAR_DECL_RE
         ],
         keywords: ODIN_KEYWORDS
     }
@@ -97,30 +141,6 @@ function(hljs) {
     //     keywords: ODIN_KEYWORDS,
     // }
 
-    ODIN_VAR_DECL_RE = { // parameters
-        begin: /\s*:(\s*=)?\s*(\.\.\.\s*)?(\^\s*)?(\[\s*\]\s*)?/,
-        end: /,|\:|=|\)|\}/,
-        endsWithParent: true,
-        excludeEnd: true,
-        returnEnd:  false,
-        returnBegin: true,
-        contains : [
-            {
-                className: "type",
-                begin: /:\s*(\.\.\.\s*)?(\^\s*)?(\[\]\s*)?(?!proc)/,
-                end: /=|\s/,
-                endsWithParent: true,
-                excludeBegin: true,
-                returnBegin: false,
-                excludeEnd: true,
-                keywords: ODIN_KEYWORDS, // TODO(Felix): use ODIN_TYPES
-            },
-            ODIN_NUMBER_RE,
-            ODIN_HASHKEYWORD_RE
-        ],
-        keywords: ODIN_KEYWORDS,
-    },
-
 
     ODIN_PROC_RE = { // procs
             begin: /[a-zA-Z0-9_][\w]*\s*:\s*:\s*(proc)\s*/,
@@ -147,7 +167,6 @@ function(hljs) {
             keywords: ODIN_KEYWORDS
     }
 
-
     // HACK HACK HACK
     // ODIN_RETURN_TYPE_RE.contains.push(ODIN_PARAMS_RE);
 
@@ -155,16 +174,8 @@ function(hljs) {
         aliases: ['odinlang'],
         keywords: ODIN_KEYWORDS,
         contains: [
-            hljs.C_LINE_COMMENT_MODE,
-            hljs.C_BLOCK_COMMENT_MODE,
-            {
-                className: 'string',
-                variants: [
-                    hljs.QUOTE_STRING_MODE,
-                    {begin: '\'', end: '[^\\\\]\''},
-                    {begin: '"', end: '[^\\\\]"'},
-                ]
-            },
+            ODIN_COMMENT_RE,
+            ODIN_STRING_RE,
             ODIN_HASHKEYWORD_RE,
             ODIN_NUMBER_RE,
             // { // function calls
