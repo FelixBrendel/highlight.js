@@ -20,10 +20,16 @@ function(hljs) {
             'complex32 complex64 complex128 rawptr string any ',
         literal:
             'true false nil --- ',
-        built_in:
-            'len cap new make free reserve clear append pop delete compile_assert assert panic ' +
-            'copy swizzle complex real imag conj expand_to_tuple min max abs clamp transmute '
     };
+
+    ODIN_BUILTINS = '[^\\w|\\.](len|cap|new|make|free|reserve|clear|append|pop|delete|compile_assert|assert|panic|' +
+                    'copy|swizzle|complex|real|imag|conj|expand_to_tuple|min|max|abs|clamp|transmute)(?!\\w|(\\s*[^\\(]))'
+
+    // ODIN_BUILTINS = /[^\w](len|cap|new|make|free|reserve|clear|min|max)(?!\w|(\s*[^\(]))/
+    ODIN_BUILTINS_RE = {
+        className: 'built_in',
+        begin:  ODIN_BUILTINS
+    }
 
     ODIN_COMMENT_RE = {
         className: 'comment',
@@ -178,6 +184,7 @@ function(hljs) {
             ODIN_STRING_RE,
             ODIN_HASHKEYWORD_RE,
             ODIN_NUMBER_RE,
+            ODIN_BUILTINS_RE,
             // { // function calls
             //     className: 'function',
             //     begin: /[a-zA-Z0-9_][\w]*\s*\(/,
