@@ -10,19 +10,25 @@ function(hljs) {
     // TODO(Felix): make types a separate string
     var ODIN_KEYWORDS = {
         keyword:
-            'import import_load foreign foreign_library ' +
+            'import export foreign foreign_library foreign_system_library ' +
             'when if else for match in do case break continue fallthrough defer return ' +
-            'macro proc struct enum union raw_union bit_field vector map dynamic static ' +
-            'using context push_context push_allocator link_name' +
-            'size_of align_of offset_of type_of type_info ' +
-            'asm yield await atomic ' +
-            'bool rune i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 int uint f16 f32 f64 ' +
-            'complex32 complex64 complex128 rawptr string any ',
+            'macro proc struct enum union bit_field vector map dynamic static ' +
+            'using context push_context push_allocator ' +
+            'size_of align_of offset_of type_of type_info_of ' +
+            'cast transmute ' +
+            'bool rune ' +
+            'i8 i16 i32 i64 i128 int ' +
+            'u8 u16 u32 u64 u128 uint ' +
+            'f16 f32 f64 ' +
+            'complex32 complex64 complex128 ' +
+            'rawptr string any ' +
+            'asm yield await atomic',
+
         literal:
             'true false nil --- ',
     };
 
-    ODIN_BUILTINS = '[^\\w|\\.](len|cap|new|make|free|reserve|clear|append|pop|delete|compile_assert|assert|panic|' +
+    ODIN_BUILTINS = '\\b(len|cap|new|make|free|reserve|clear|append|pop|delete|compile_assert|assert|panic|' +
                     'copy|swizzle|complex|real|imag|conj|expand_to_tuple|min|max|abs|clamp|transmute)(?!\\w|(\\s*[^\\(]))'
 
     // ODIN_BUILTINS = /[^\w](len|cap|new|make|free|reserve|clear|min|max)(?!\w|(\s*[^\(]))/

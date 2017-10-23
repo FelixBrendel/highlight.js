@@ -1,3 +1,10 @@
+len()
+ len()
+alen()
+(len())
+a.len()
+
+
 ﻿gl.clear(gl.ClearFlags.COLOR_BUFFER);
 is_between :: proc(v, min, max : int) -> bool #inline {
    return v >= min && v <= max;
